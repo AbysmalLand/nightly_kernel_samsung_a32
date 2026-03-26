@@ -4,7 +4,8 @@
 # goodluck building sir
 # gore ubuntu 25.10 error fix: sudo ln -s /lib/x86_64-linux-gnu/libxml2.so.16 /lib/x86_64-linux-gnu/libxml2.so.2
 # Edit the zyc clang directory name accordingly to ur toolchain
-export TC=/home/vigus/zyc-clang
+export TC=$HOME/zyc-clang
+export PATH="$HOME/zyc-clang/bin:$PATH"
 
 export CROSS_COMPILE=$TC/bin/aarch64-linux-gnu-
 export LD=$TC/bin/ld.lld
@@ -26,7 +27,7 @@ export CONFIG_SECTION_MISMATCH_WARN_ONLY=y
 make -C $(pwd) O=$(pwd)/out clean -j$(nproc) && make -C $(pwd) O=$(pwd)/out mrproper -j$(nproc)
 clear
  
-read -p "`echo -e 'Thanks for building O2 kernel. \nTell what device you wanna build for. \nsupported devices: a22, a32, m32(experimental), f22(experimental)  '`" choice
+read -p "`echo -e 'Thanks for building O2 kernel. \nTell what device you wanna build for. \nSupported devices: A22, A32, M32 (Experimental), F22 (Experimental)  '`" choice
 case "$choice" in 
   a22|A22 ) export DEVICE="a22";;
   a32|A32 ) export DEVICE="a32";;
