@@ -26,23 +26,15 @@ export CONFIG_SECTION_MISMATCH_WARN_ONLY=y
 make -C $(pwd) O=$(pwd)/out clean -j$(nproc) && make -C $(pwd) O=$(pwd)/out mrproper -j$(nproc)
 clear
  
-read -p "`echo -e 'thanks for building slmkernel \ntell what device you wanna build for 💩💩 \nsupported devices: a22, a32, m32(experimental), f22(experimental)  '`" choice
+read -p "`echo -e 'Thanks for building O2 kernel. \nTell what device you wanna build for. \nsupported devices: a22, a32, m32(experimental), f22(experimental)  '`" choice
 case "$choice" in 
   a22|A22 ) export DEVICE="a22";;
   a32|A32 ) export DEVICE="a32";;
   m32|M32 ) export DEVICE="m32";;
   f22|F22 ) export DEVICE="f22";;
-  * ) echo "u made a typo or $choice not supported yet srry 💩" && exit;;
+  * ) echo "You made a typo or $choice not supported yet sorry." && exit;;
 esac
 
 make -C $(pwd) O=$(pwd)/out -j$(nproc) "$DEVICE"_o2_defconfig
 make -s -C $(pwd) O=$(pwd)/out -j$(nproc)
 echo "$DEVICE"
-
-#only for me delete if u want 💩💩💩💩
-read -p "copy to kernal directory? (are u vigus?) y/n   " choice
-case "$choice" in 
-  y|Y ) cp out/arch/arm64/boot/Image ~/Downloads/buildkernal/Image;;
-  n|N ) echo "k";;
-  * ) echo "nvm";;
-esac
