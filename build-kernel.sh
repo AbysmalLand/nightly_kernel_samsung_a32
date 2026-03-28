@@ -24,6 +24,9 @@ export KCFLAGS=' -w -pipe -O3'
 export KCPPFLAGS=' -O3'
 export CONFIG_SECTION_MISMATCH_WARN_ONLY=y
 
+rm -rf out/
+make -C $(pwd) O=$(pwd)/out clean -j$(nproc) && make -C $(pwd) O=$(pwd)/out clean -j$(nproc)
+
 make -C $(pwd) O=$(pwd)/out clean -j$(nproc) && make -C $(pwd) O=$(pwd)/out mrproper -j$(nproc)
 clear
  
