@@ -83,7 +83,7 @@ lto_lds()
 		built-in.a ${KBUILD_VMLINUX_LIBS} \
 		> .tmp_lto.lds
 
-	if [ -n "${CONFIG_MODVERSIONS}" ] && false; then
+	if [ -n "${CONFIG_MODVERSIONS}" ]; then
 		for a in built-in.a ${KBUILD_VMLINUX_LIBS}; do
 			for o in $(${AR} t $a); do
 				if [ -f ${o}.symversions ]; then
