@@ -8,7 +8,7 @@ export TC=$HOME/zyc-clang
 export PATH="$HOME/zyc-clang/bin:$PATH"
 
 export CROSS_COMPILE=$TC/bin/aarch64-linux-gnu-
-export LD=$TC/bin/aarch64-linux-gnu-ld
+export LD=$TC/bin/ld.lld
 export OBJCOPY=$TC/bin/llvm-objcopy
 export AS=$TC/bin/llvm-as
 export NM=$TC/bin/llvm-nm
