@@ -37,5 +37,7 @@ case "$choice" in
 esac
 
 make -C $(pwd) O=$(pwd)/out -j$(nproc) "$DEVICE"_o2_defconfig
+./scripts/config --file out/.config --disable MODVERSIONS
+./scripts/config --file out/.config --disable MODULE_SRCVERSION_ALL
 make -s -C $(pwd) O=$(pwd)/out -j$(nproc)
 echo "$DEVICE"
