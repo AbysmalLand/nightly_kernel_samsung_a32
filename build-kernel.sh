@@ -4,8 +4,8 @@
 # goodluck building sir
 # gore ubuntu 25.10 error fix: sudo ln -s /lib/x86_64-linux-gnu/libxml2.so.16 /lib/x86_64-linux-gnu/libxml2.so.2
 # Edit the zyc clang directory name accordingly to ur toolchain
-export TC=$HOME/zyc-clang
-export PATH="$HOME/zyc-clang/bin:$PATH"
+export TC=$HOME/zyc23
+export PATH="$HOME/zyc23/bin:$PATH"
 
 export CROSS_COMPILE=$TC/bin/aarch64-linux-gnu-
 export LD=$TC/bin/ld.lld
@@ -20,7 +20,7 @@ export CROSS_COMPILE_ARM32=$TC/bin/arm-linux-gnueabi-
 export ARCH=arm64
 export ANDROID_MAJOR_VERSION=r
 
-export KCFLAGS=' -w -pipe -O3'
+export KCFLAGS=' -w -pipe -O3 -Wno-int-conversion'
 export KCPPFLAGS=' -O3'
 export CONFIG_SECTION_MISMATCH_WARN_ONLY=y
 
