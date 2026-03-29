@@ -1,11 +1,12 @@
 #!/bin/bash
 
-# u can use zyc clang 14 if u're unsure what toolchain to use. https://github.com/ZyCromerZ/Clang/releases/tag/14.0.6-20250704-release
-# goodluck building sir
-# gore ubuntu 25.10 error fix: sudo ln -s /lib/x86_64-linux-gnu/libxml2.so.16 /lib/x86_64-linux-gnu/libxml2.so.2
-# Edit the zyc clang directory name accordingly to ur toolchain
-export TC=$HOME/zyc23
-export PATH="$HOME/zyc23/bin:$PATH"
+# You can use zyc clang 14 if u're unsure what toolchain to use. https://github.com/ncatt/clang
+# Goodluck building!
+# Ubuntu 25.10 error fix: sudo ln -s /lib/x86_64-linux-gnu/libxml2.so.16 /lib/x86_64-linux-gnu/libxml2.so.2
+# Edit the zyc-clang directory name accordingly to ur toolchain
+# Please remove "-Wno-error", "-Wno-int-conversion" and "-Wno-imcompatible-pointer-types" if you build this source with Clang version 13.
+export TC=$HOME/zyc-clang
+export PATH="$HOME/zyc-clang/bin:$PATH"
 
 export CROSS_COMPILE=$TC/bin/aarch64-linux-gnu-
 export LD=$TC/bin/ld.lld
@@ -40,7 +41,5 @@ case "$choice" in
 esac
 
 make -C $(pwd) O=$(pwd)/out -j$(nproc) "$DEVICE"_c0rd_defconfig
-./scripts/config --file out/.config --disable MODVERSIONS
-./scripts/config --file out/.config --disable MODULE_SRCVERSION_ALL
 make -s -C $(pwd) O=$(pwd)/out -j$(nproc)
 echo "$DEVICE"
