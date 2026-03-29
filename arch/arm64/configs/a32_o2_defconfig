@@ -1,6 +1,6 @@
 #
-# Automatically generated file; DO NOT EDIT.
-# Linux/arm64 4.14.186 Kernel Configuration
+# Edit any if you want but it's at your own risk. - nc4tt
+# Linux/arm64 4.14.356 Kernel Configuration
 #
 CONFIG_ARM64=y
 CONFIG_64BIT=y
