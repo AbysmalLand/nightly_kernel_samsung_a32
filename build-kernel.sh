@@ -30,7 +30,7 @@ make -C $(pwd) O=$(pwd)/out clean -j$(nproc) && make -C $(pwd) O=$(pwd)/out clea
 make -C $(pwd) O=$(pwd)/out clean -j$(nproc) && make -C $(pwd) O=$(pwd)/out mrproper -j$(nproc)
 clear
  
-read -p "`echo -e 'Thanks for building O2 kernel. \nTell what device you wanna build for. \nSupported devices: A22, A32, M32 (Experimental), F22 (Experimental)  '`" choice
+read -p "`echo -e 'Thanks for building my kernel. \nTell what device you wanna build for. \nSupported devices: A22, A32, M32 (Experimental), F22 (Experimental)  '`" choice
 case "$choice" in 
   a22|A22 ) export DEVICE="a22";;
   a32|A32 ) export DEVICE="a32";;
@@ -39,7 +39,7 @@ case "$choice" in
   * ) echo "You made a typo or $choice not supported yet sorry." && exit;;
 esac
 
-make -C $(pwd) O=$(pwd)/out -j$(nproc) "$DEVICE"_o2_defconfig
+make -C $(pwd) O=$(pwd)/out -j$(nproc) "$DEVICE"_c0rd_defconfig
 ./scripts/config --file out/.config --disable MODVERSIONS
 ./scripts/config --file out/.config --disable MODULE_SRCVERSION_ALL
 make -s -C $(pwd) O=$(pwd)/out -j$(nproc)
