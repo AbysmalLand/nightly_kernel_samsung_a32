@@ -972,7 +972,7 @@ static int crypto_test_show(struct seq_file *m, void *v)
 		case -ERANGE:
 			p = ERR_RANGE; break;
 		case -ENOENT:
-			p = ERR_PTR(-ENOENT); break;
+			p = ENOENT; break;
 		case -EOPNOTSUPP:
 			p = ERR_OPNOTSUPP; break;
 	}
