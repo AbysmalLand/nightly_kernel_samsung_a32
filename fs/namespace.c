@@ -353,7 +353,6 @@ static void mnt_free_id(struct mount *mnt)
  */
 static int mnt_alloc_group_id(struct mount *mnt)
 {
-	int res;
 
 #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 	int res;
