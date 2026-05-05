@@ -25,6 +25,8 @@ export KCFLAGS=' -w -pipe -O3 -Wno-int-conversion'
 export KCPPFLAGS=' -O3'
 export CONFIG_SECTION_MISMATCH_WARN_ONLY=y
 
+git pull origin monochrome_r1
+
 rm -rf out/
 make -C $(pwd) O=$(pwd)/out clean -j$(nproc) && make -C $(pwd) O=$(pwd)/out mrproper -j$(nproc)
 clear
