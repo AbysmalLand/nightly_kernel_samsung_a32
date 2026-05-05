@@ -29,7 +29,9 @@ rm -rf out/
 make -C $(pwd) O=$(pwd)/out clean -j$(nproc) && make -C $(pwd) O=$(pwd)/out mrproper -j$(nproc)
 clear
  
-read -p "`echo -e 'Thanks for building nightly kernel. \nVersion: monochrome_r1.
+echo "thanks for build nightly kernel."
+echo "made by @ncatt and all contributors in Samsung-MT6768-Devs"
+echo "version: monochrome_r1"
 
 make -C $(pwd) O=$(pwd)/out -j$(nproc) a32_mono_defconfig
 make -s -C $(pwd) O=$(pwd)/out -j$(nproc)
