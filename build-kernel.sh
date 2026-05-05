@@ -26,20 +26,11 @@ export KCPPFLAGS=' -O3'
 export CONFIG_SECTION_MISMATCH_WARN_ONLY=y
 
 rm -rf out/
-make -C $(pwd) O=$(pwd)/out clean -j$(nproc) && make -C $(pwd) O=$(pwd)/out clean -j$(nproc)
-
 make -C $(pwd) O=$(pwd)/out clean -j$(nproc) && make -C $(pwd) O=$(pwd)/out mrproper -j$(nproc)
 clear
  
-read -p "`echo -e 'Thanks for building my kernel. \nTell what device you wanna build for. \nSupported devices: A22, A32, M32 (Experimental), F22 (Experimental)  '`" choice
-case "$choice" in 
-  a22|A22 ) export DEVICE="a22";;
-  a32|A32 ) export DEVICE="a32";;
-  m32|M32 ) export DEVICE="m32";;
-  f22|F22 ) export DEVICE="f22";;
-  * ) echo "You made a typo or $choice not supported yet sorry." && exit;;
-esac
+read -p "`echo -e 'Thanks for building nightly kernel. \nVersion: monochrome_r1.
 
-make -C $(pwd) O=$(pwd)/out -j$(nproc) "$DEVICE"_c0rd_defconfig
+make -C $(pwd) O=$(pwd)/out -j$(nproc) a32_mono_defconfig
 make -s -C $(pwd) O=$(pwd)/out -j$(nproc)
-echo "$DEVICE"
+echo "build done?"
