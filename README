@@ -1,4 +1,7 @@
-25-ji-Nightc0rd-de kernel for A32, A22, M32 and F22 (Both are still experiment)
+25-ji-Nightc0rd-de kernel for A32
+
+28/06/26'
+Drop A22, M32 and F22 device.
 ===========
 Goodluck building! :D
 
