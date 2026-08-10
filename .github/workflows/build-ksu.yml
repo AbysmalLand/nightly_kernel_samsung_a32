@@ -40,10 +40,10 @@ jobs:
     - name: Setup KernelSU
       run: |
         git clone --depth=1 https://github.com/tiann/KernelSU.git KernelSU-latest
-        cd KernelSU-latest
-        wget -q https://github.com/tiann/KernelSU/releases/latest/download/ksupatch.sh
-        chmod +x ksupatch.sh
-        ./kspatch.sh ../
+
+    - name: Get Latest Commit
+      run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
 
     - name: Compile Kernel
       run: |
@@ -64,14 +64,13 @@ jobs:
           echo "Kernel Image not found!"
           exit 1
         fi
-
     - name: Create Flashable Zip
       run: |
         cd sta7dust
-        zip -r9 ../sta7dust-nightly-ksu-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-$(date +'%Y%m%d').zip * -x .git README.md *placeholder
+        zip -r9 ../nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}.zip * -x .git README.md *placeholder
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: sta7dust-nightly-ksu-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}
-        path: sta7dust-nightly-ksu-*.zip
+        name: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}
+        path: nightly_yuki-r1-*.zip
