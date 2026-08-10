@@ -54,7 +54,7 @@ fw-external-$(CONFIG_SENSORS_A96T396_A13X_KOR) += abov/a96t396_a13x_kor_main.bin
 fw-external-$(CONFIG_SENSORS_A96T396_A13X) += abov/a96t396_a13x_main.bin
 fw-external-$(CONFIG_SENSORS_A96T3X6_A32X) += abov/a96t356_a32x_main.bin abov/a96t356_a32x_sub.bin \
 					 abov/a96t356_a32x_kor_main.bin abov/a96t356_a32x_kor_sub.bin
-fw-external-$(CONFIG_TOUCHSCREEN_STM) += tsp_stm/fts5cu56a_a32.bin tsp_stm/fts5cu56a_a22.bin
+fw-external-$(CONFIG_TOUCHSCREEN_STM) += tsp_stm/fts5cu56a_a32.bin
 
 fw-external-$(CONFIG_TOUCHSCREEN_ZINITIX_ZT75XX) += tsp_zinitix/zt7548_a41.bin tsp_zinitix/zt7548_a415d.bin
 
