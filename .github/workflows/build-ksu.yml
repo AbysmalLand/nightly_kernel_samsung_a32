@@ -11,6 +11,14 @@ on:
         description: 'Tuning Profile (perf, balance, battery)'
         required: true
         default: 'balance'
+      build_type:
+        description: 'Build Type'
+        required: true
+        default: 'debug'
+        type: choice
+        options:
+        - debug
+        - release
 
 jobs:
   build:
@@ -69,10 +77,21 @@ jobs:
     - name: Create Flashable Zip
       run: |
         cd sta7dust
-        zip -r9 ../nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}.zip * -x .git README.md *placeholder
-
     - name: Upload Artifact
+      if: github.event.inputs.build_type == 'debug'
       uses: actions/upload-artifact@v4
       with:
         name: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}
         path: nightly_yuki-r1-*.zip
+
+    - name: Release
+      if: github.event.inputs.build_type == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}
+        name: Nightly KernelSU ${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}
+        files: nightly_yuki-r1-*.zip
+        prerelease: true
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
