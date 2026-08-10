@@ -25,7 +25,7 @@ jobs:
 
     steps:
     - name: Checkout Kernel Source
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install Dependencies
       run: |
@@ -65,7 +65,7 @@ jobs:
         zip -r9 ../sta7dust-nightly-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-$(date +'%Y%m%d').zip * -x .git README.md *placeholder
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: sta7dust-nightly-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}
         path: sta7dust-nightly-*.zip
