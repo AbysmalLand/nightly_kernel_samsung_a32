@@ -58,6 +58,7 @@ esac
 
 #add $CFGDIR/ksu.config at the end before ">" for ksu integration(optional)
 cat $CFGDIR/a32_nightly_defconfig $CFGDIR/"$DEVICE".config $CFGDIR/$CFG_FRAG > $CFGDIR/compiled_defconfig
+if [ -f $CFGDIR/ksu.config ]; then cat $CFGDIR/ksu.config >> $CFGDIR/compiled_defconfig; fi
 #selinux and gpu driver control
 #buildable: mali bifrost r25p0, mali valhall r32p1, mali avalon r49p1[WIP]
 echo '

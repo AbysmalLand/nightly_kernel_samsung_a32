@@ -39,7 +39,9 @@ jobs:
 
     - name: Setup KernelSU
       run: |
-        git clone --depth=1 https://github.com/tiann/KernelSU.git KernelSU-latest
+        curl -LSs "https://raw.githubusercontent.com/anotheranhiutangerine/KittiSU/main/kernel/setup.sh" | bash
+        echo "CONFIG_KSU=y" > $GITHUB_WORKSPACE/arch/arm64/configs/ksu.config
+        echo "CONFIG_KSU_MANUAL_HOOK=y" >> $GITHUB_WORKSPACE/arch/arm64/configs/ksu.config
 
     - name: Get Latest Commit
       run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
