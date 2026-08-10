@@ -4,9 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       device:
-        description: 'Device to build for (a32 or m22)'
-        required: true
-        default: 'a32'
+        description: 'Device to build for (a32)'
       profile:
         description: 'Tuning Profile (perf, balance, battery)'
         required: true

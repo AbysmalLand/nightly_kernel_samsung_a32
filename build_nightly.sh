@@ -29,16 +29,14 @@ export CFGDIR=arch/arm64/configs
 rm -rf $CFGDIR/compiled_defconfig
 make -C $(pwd) O=$(pwd)/out clean -j$(nproc) && make -C $(pwd) O=$(pwd)/out mrproper -j$(nproc)
 clear
- 
 if [ -z "$DEVICE_CHOICE" ]; then
-  read -p "`echo -e 'nightly kernel builder \ntell what device you wanna build for \nsupported devices: a32, m22(experimental)  '`" choice
+  read -p "`echo -e 'nightly kernel builder \ntell what device you wanna build for \nsupported devices: a32  '`" choice
 else
   choice=$DEVICE_CHOICE
 fi
 
 case "$choice" in 
   a32|A32 ) export DEVICE="a32";;
-  m22|M22 ) export DEVICE="m22";;
   * ) echo "u made a typo or $choice not supported yet srry" && exit;;
 esac
 
