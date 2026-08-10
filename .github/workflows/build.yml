@@ -45,6 +45,7 @@ jobs:
 
     - name: Compile Kernel
       run: |
+        echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
         export TC=$GITHUB_WORKSPACE/clang
         chmod +x build_nightly.sh
         ./build_nightly.sh
@@ -66,22 +67,23 @@ jobs:
     - name: Create Flashable Zip
       run: |
         cd sta7dust
-        zip -r9 ../sta7dust-nightly-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-$(date +'%Y%m%d').zip * -x .git README.md *placeholder
+        BUILD_TYPE=${{ github.event.inputs.build_type || 'debug' }}
+        zip -r9 ../nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${BUILD_TYPE}.zip * -x .git README.md *placeholder
 
     - name: Upload Artifact
       if: github.event.inputs.build_type == 'debug'
       uses: actions/upload-artifact@v4
       with:
-        name: sta7dust-nightly-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}
-        path: sta7dust-nightly-*.zip
+        name: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-debug
+        path: nightly_yuki-r1-*.zip
 
     - name: Release
       if: github.event.inputs.build_type == 'release'
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: nightly-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-$(date +'%Y%m%d')
-        name: Nightly Build ${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-$(date +'%Y%m%d')
-        files: sta7dust-nightly-*.zip
+        tag_name: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-release
+        name: Nightly ${{ env.DEVICE_CHOICE }} release
+        files: nightly_yuki-r1-*.zip
         prerelease: true
         generate_release_notes: true
       env:
