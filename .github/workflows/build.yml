@@ -43,14 +43,11 @@ jobs:
         tar -xf Clang-14.0.6-20250704.tar.gz -C $GITHUB_WORKSPACE/clang
         rm Clang-14.0.6-20250704.tar.gz
 
-    - name: Clean Previous Build
+    - name: Compile Kernel
       run: |
         rm -rf out
         make clean 2>/dev/null || true
         make mrproper 2>/dev/null || true
-
-     - name: Compile Kernel
-      run: |
         echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
         export TC=$GITHUB_WORKSPACE/clang
         chmod +x build_nightly.sh
