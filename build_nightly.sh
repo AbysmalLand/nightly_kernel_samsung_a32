@@ -4,7 +4,7 @@
 # goodluck building sir
 # gore ubuntu 25.10 error fix: sudo ln -s /lib/x86_64-linux-gnu/libxml2.so.16 /lib/x86_64-linux-gnu/libxml2.so.2
 #edit the zyc clang directory name accordingly to ur toolchain.
-export TC=/home/vigus/zyc-clang
+export TC=${TC:-/home/vigus/zyc-clang}
 
 export CROSS_COMPILE=$TC/bin/aarch64-linux-gnu-
 export LD=$TC/bin/ld.lld
@@ -28,14 +28,24 @@ rm -rf $CFGDIR/compiled_defconfig
 make -C $(pwd) O=$(pwd)/out clean -j$(nproc) && make -C $(pwd) O=$(pwd)/out mrproper -j$(nproc)
 clear
  
-read -p "`echo -e 'nightly kernel builder \ntell what device you wanna build for \nsupported devices: a32, m22(experimental)  '`" choice
+if [ -z "$DEVICE_CHOICE" ]; then
+  read -p "`echo -e 'nightly kernel builder \ntell what device you wanna build for \nsupported devices: a32, m22(experimental)  '`" choice
+else
+  choice=$DEVICE_CHOICE
+fi
+
 case "$choice" in 
   a32|A32 ) export DEVICE="a32";;
   m22|M22 ) export DEVICE="m22";;
   * ) echo "u made a typo or $choice not supported yet srry" && exit;;
 esac
 
-read -p "`echo -e '\nselect tuning profile: \navailable: perf, balance, battery '`" prof_choice
+if [ -z "$PROFILE_CHOICE" ]; then
+  read -p "`echo -e '\nselect tuning profile: \navailable: perf, balance, battery '`" prof_choice
+else
+  prof_choice=$PROFILE_CHOICE
+fi
+
 case "$prof_choice" in 
   perf ) export CFG_FRAG="perf.config";;
   balance ) export CFG_FRAG="balance.config";;
