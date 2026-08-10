@@ -1,0 +1,77 @@
+name: Build Nightly Kernel (KernelSU)
+
+on:
+  workflow_dispatch:
+    inputs:
+      device:
+        description: 'Device to build for (a32)'
+        required: true
+        default: 'a32'
+      profile:
+        description: 'Tuning Profile (perf, balance, battery)'
+        required: true
+        default: 'balance'
+
+jobs:
+  build:
+    name: Build Kernel for ${{ github.event.inputs.device || 'a32' }} (${{ github.event.inputs.profile || 'balance' }}) with KernelSU
+    runs-on: ubuntu-22.04
+
+    env:
+      DEVICE_CHOICE: ${{ github.event.inputs.device || 'a32' }}
+      PROFILE_CHOICE: ${{ github.event.inputs.profile || 'balance' }}
+
+    steps:
+    - name: Checkout Kernel Source
+      uses: actions/checkout@v4
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential bc gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi libssl-dev libfl-dev curl unzip wget cpio python3 python2 git zip
+
+    - name: Download Toolchain (ZyCromerZ Clang 14)
+      run: |
+        mkdir -p $GITHUB_WORKSPACE/clang
+        wget -q https://github.com/ZyCromerZ/Clang/releases/download/14.0.6-20250704-release/Clang-14.0.6-20250704.tar.gz
+        tar -xf Clang-14.0.6-20250704.tar.gz -C $GITHUB_WORKSPACE/clang
+        rm Clang-14.0.6-20250704.tar.gz
+
+    - name: Setup KernelSU
+      run: |
+        git clone --depth=1 https://github.com/tiann/KernelSU.git KernelSU-latest
+        cd KernelSU-latest
+        wget -q https://github.com/tiann/KernelSU/releases/latest/download/ksupatch.sh
+        chmod +x ksupatch.sh
+        ./kspatch.sh ../
+
+    - name: Compile Kernel
+      run: |
+        export TC=$GITHUB_WORKSPACE/clang
+        chmod +x build_nightly.sh
+        ./build_nightly.sh
+
+    - name: Prepare Sta7dust (AnyKernel3)
+      run: |
+        git clone https://github.com/tuongnguyn/sta7dust.git sta7dust
+        
+        # Determine if we should gzip the Image or if Image.gz was already created
+        if [ -f out/arch/arm64/boot/Image.gz ]; then
+          cp out/arch/arm64/boot/Image.gz sta7dust/
+        elif [ -f out/arch/arm64/boot/Image ]; then
+          gzip -9 -c out/arch/arm64/boot/Image > sta7dust/Image.gz
+        else
+          echo "Kernel Image not found!"
+          exit 1
+        fi
+
+    - name: Create Flashable Zip
+      run: |
+        cd sta7dust
+        zip -r9 ../sta7dust-nightly-ksu-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-$(date +'%Y%m%d').zip * -x .git README.md *placeholder
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: sta7dust-nightly-ksu-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}
+        path: sta7dust-nightly-ksu-*.zip
