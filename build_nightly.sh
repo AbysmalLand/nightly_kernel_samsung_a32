@@ -6,15 +6,17 @@
 #edit the zyc clang directory name accordingly to ur toolchain.
 export TC=${TC:-/home/vigus/zyc-clang}
 
-export CROSS_COMPILE=$TC/bin/aarch64-linux-gnu-
-export LD=$TC/bin/ld.lld
-export OBJCOPY=$TC/bin/llvm-objcopy
-export AS=$TC/bin/llvm-as
-export NM=$TC/bin/llvm-nm
-export STRIP=$TC/bin/llvm-strip
-export OBJDUMP=$TC/bin/llvm-objdump
-export READELF=$TC/bin/llvm-readelf
-export CC=$TC/bin/clang
+export PATH=$TC/bin:$PATH
+
+export CROSS_COMPILE=aarch64-linux-gnu-
+export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+export CC=clang
+export LD=ld.lld
+export AR=llvm-ar
+export NM=llvm-nm
+export OBJCOPY=llvm-objcopy
+export OBJDUMP=llvm-objdump
+export STRIP=llvm-strip
 export ARCH=arm64
 
 export KCFLAGS=' -w -pipe -O3'
@@ -40,6 +42,9 @@ case "$choice" in
   * ) echo "u made a typo or $choice not supported yet srry" && exit;;
 esac
 
+# Create empty device config if it doesn't exist
+touch $CFGDIR/"$DEVICE".config
+
 if [ -z "$PROFILE_CHOICE" ]; then
   read -p "`echo -e '\nselect tuning profile: \navailable: perf, balance, battery '`" prof_choice
 else
@@ -55,7 +60,6 @@ esac
 
 #add $CFGDIR/ksu.config at the end before ">" for ksu integration(optional)
 cat $CFGDIR/a32_nightly_defconfig $CFGDIR/"$DEVICE".config $CFGDIR/$CFG_FRAG > $CFGDIR/compiled_defconfig
-
 #selinux and gpu driver control
 #buildable: mali bifrost r25p0, mali valhall r32p1, mali avalon r49p1[WIP]
 echo '
@@ -65,8 +69,8 @@ CONFIG_ALWAYS_PERMISSIVE=y
 CONFIG_MTK_GPU_VERSION="mali valhall r32p1"
 ' >> "$CFGDIR/compiled_defconfig"
 
-make -C $(pwd) O=$(pwd)/out -j$(nproc) compiled_defconfig
-make -s -C $(pwd) O=$(pwd)/out -j$(nproc)
+make -C $(pwd) O=$(pwd)/out -j$(nproc) CC="$CC" LD="$LD" AR="$AR" NM="$NM" OBJCOPY="$OBJCOPY" OBJDUMP="$OBJDUMP" STRIP="$STRIP" CROSS_COMPILE="$CROSS_COMPILE" CROSS_COMPILE_ARM32="$CROSS_COMPILE_ARM32" compiled_defconfig
+make -s -C $(pwd) O=$(pwd)/out -j$(nproc) CC="$CC" LD="$LD" AR="$AR" NM="$NM" OBJCOPY="$OBJCOPY" OBJDUMP="$OBJDUMP" STRIP="$STRIP" CROSS_COMPILE="$CROSS_COMPILE" CROSS_COMPILE_ARM32="$CROSS_COMPILE_ARM32"
 
 IMAGECHECK="$(pwd)/out/arch/arm64/boot/Image"
 
