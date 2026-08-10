@@ -1,8 +1,6 @@
 name: Build Nightly Kernel
 
 on:
-  push:
-    branches: [ "25-ji-Nightc0rd-de_yuki" ]
   workflow_dispatch:
     inputs:
       device:
