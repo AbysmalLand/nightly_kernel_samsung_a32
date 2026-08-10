@@ -421,7 +421,7 @@ static unsigned int FY_G75Tbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 	/* Freq, Vproc, post_div, clk_div */
 
 	/* L */
-#ifdef CONFIG_SLM_OC_CCI
+#ifdef CONFIG_NIGHTLY_OC_CCI
 	{ 1800, 90, 1, 1 },
 #else
 	{ 1800, 81, 1, 1 },
@@ -445,7 +445,7 @@ static unsigned int FY_G75Tbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 
 
     /* B */
-#ifdef CONFIG_SLM_UV
+#ifdef CONFIG_NIGHTLY_UV
     { 2000, 92, 1, 1 },
     { 1950, 90, 1, 1 },
     { 1900, 88, 1, 1 },
@@ -472,7 +472,7 @@ static unsigned int FY_G75Tbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 
 
 	/* CCI */
-#ifdef CONFIG_SLM_OC_CCI
+#ifdef CONFIG_NIGHTLY_OC_CCI
 	{ 1460, 90, 2, 1 },
 #else
 	{ 1277, 81, 2, 1 },

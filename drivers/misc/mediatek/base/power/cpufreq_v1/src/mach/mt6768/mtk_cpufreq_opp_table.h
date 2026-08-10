@@ -706,7 +706,7 @@
 #define CPU_DVFS_FREQ15_L_G75		850000		/* KHz */
 
 /* for DVFS OPP table CCI */
-#ifdef CONFIG_SLM_OC_CCI
+#ifdef CONFIG_NIGHTLY_OC_CCI
 #define CPU_DVFS_FREQ0_CCI_G75		1460000		/* KHz */
 #else
 #define CPU_DVFS_FREQ0_CCI_G75		1277000		/* KHz */
@@ -728,7 +728,7 @@
 #define CPU_DVFS_FREQ15_CCI_G75	        500000		/* KHz */
 
 /* for DVFS OPP table L */
-#ifdef CONFIG_SLM_OC_CCI
+#ifdef CONFIG_NIGHTLY_OC_CCI
 #define CPU_DVFS_VOLT0_VPROC1_G75	106250		/* 10uV */
 #else
 #define CPU_DVFS_VOLT0_VPROC1_G75	100625		/* 10uV */
@@ -750,7 +750,7 @@
 #define CPU_DVFS_VOLT15_VPROC1_G75	 65000		/* 10uV */
 
 /* for DVFS OPP table B */
-#ifdef CONFIG_SLM_UV
+#ifdef CONFIG_NIGHTLY_UV
 #define CPU_DVFS_VOLT0_VPROC2_G75	107500		/* 10uV */
 #define CPU_DVFS_VOLT1_VPROC2_G75	106250		/* 10uV */
 #define CPU_DVFS_VOLT2_VPROC2_G75	105000		/* 10uV */
@@ -776,7 +776,7 @@
 #define CPU_DVFS_VOLT15_VPROC2_G75	 67500		/* 10uV */
 
 /* for DVFS OPP table CCI */
-#ifdef CONFIG_SLM_OC_CCI
+#ifdef CONFIG_NIGHTLY_OC_CCI
 #define CPU_DVFS_VOLT0_VPROC3_G75	106250		/* 10uV */
 #else
 #define CPU_DVFS_VOLT0_VPROC3_G75	100625		/* 10uV */
