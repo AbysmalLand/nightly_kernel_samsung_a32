@@ -55,7 +55,13 @@ jobs:
       run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
 
-    - name: Compile Kernel
+    - name: Clean Previous Build
+      run: |
+        rm -rf out
+        make clean 2>/dev/null || true
+        make mrproper 2>/dev/null || true
+
+     - name: Compile Kernel
       run: |
         export TC=$GITHUB_WORKSPACE/clang
         chmod +x build_nightly.sh
