@@ -36,6 +36,7 @@
 #include <linux/highmem.h>
 #include <linux/io.h>
 #include <linux/delay.h>
+#include <linux/sched/signal.h>
 #include <trace/events/cma.h>
 
 #include "cma.h"

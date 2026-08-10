@@ -403,13 +403,8 @@ void persistent_ram_zap(struct persistent_ram_zone *prz)
 	persistent_ram_update_header_ecc(prz);
 }
 
-#ifdef CONFIG_SEC_DEBUG
 void *persistent_ram_vmap(phys_addr_t start, size_t size,
 		unsigned int memtype)
-#else
-static void *persistent_ram_vmap(phys_addr_t start, size_t size,
-		unsigned int memtype)
-#endif
 {
 	struct page **pages;
 	phys_addr_t page_start;

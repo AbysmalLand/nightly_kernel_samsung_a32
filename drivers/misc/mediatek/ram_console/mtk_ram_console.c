@@ -248,11 +248,7 @@ struct ram_console_buffer {
 #define REBOOT_REASON_SIG (0x43474244)	/* DBRR */
 static int FIQ_log_size = sizeof(struct ram_console_buffer);
 
-#ifdef CONFIG_SEC_DEBUG
 struct ram_console_buffer *ram_console_buffer;
-#else
-static struct ram_console_buffer *ram_console_buffer;
-#endif
 static struct ram_console_buffer *ram_console_old;
 static struct ram_console_buffer *ram_console_buffer_pa;
 
