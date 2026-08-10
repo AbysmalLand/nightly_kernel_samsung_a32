@@ -47,7 +47,7 @@ jobs:
 
     - name: Prepare Sta7dust (AnyKernel3)
       run: |
-        git clone https://github.com/tuongnguyn/r4in.git sta7dust
+        git clone https://github.com/tuongnguyn/sta7dust.git sta7dust
         
         # Determine if we should gzip the Image or if Image.gz was already created
         if [ -f out/arch/arm64/boot/Image.gz ]; then
