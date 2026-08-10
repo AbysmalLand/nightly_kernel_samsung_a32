@@ -35,10 +35,16 @@ case "$choice" in
   * ) echo "u made a typo or $choice not supported yet srry" && exit;;
 esac
 
-#edit perf.config to battery.config to disable perf tweaks, dont use them at the same time!
+read -p "`echo -e '\nselect tuning profile: \navailable: perf, balance, battery '`" prof_choice
+case "$prof_choice" in 
+  perf ) export CFG_FRAG="perf.config";;
+  balance ) export CFG_FRAG="balance.config";;
+  battery ) export CFG_FRAG="battery.config";;
+  * ) export CFG_FRAG="balance.config";;
+esac
+
 #add $CFGDIR/ksu.config at the end before ">" for ksu integration(optional)
-#example: build m22 battery life oriented karnal with ksu: $CFGDIR/a32_nightly_defconfig $CFGDIR/"$DEVICE".config $CFGDIR/battery.config $CFGDIR/ksu.config
-cat $CFGDIR/a32_nightly_defconfig $CFGDIR/"$DEVICE".config $CFGDIR/battery.config > $CFGDIR/compiled_defconfig
+cat $CFGDIR/a32_nightly_defconfig $CFGDIR/"$DEVICE".config $CFGDIR/$CFG_FRAG > $CFGDIR/compiled_defconfig
 
 #selinux and gpu driver control
 #buildable: mali bifrost r25p0, mali valhall r32p1, mali avalon r49p1[WIP]
