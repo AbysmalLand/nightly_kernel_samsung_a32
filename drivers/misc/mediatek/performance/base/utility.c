@@ -119,6 +119,7 @@ void perfmgr_trace_count(int val, const char *fmt, ...)
 
 	preempt_enable();
 }
+EXPORT_SYMBOL(perfmgr_trace_count);
 
 void perfmgr_trace_printk(char *module, char *string)
 {
@@ -128,6 +129,7 @@ void perfmgr_trace_printk(char *module, char *string)
 			current->tgid, module, string);
 	preempt_enable();
 }
+EXPORT_SYMBOL(perfmgr_trace_printk);
 
 void perfmgr_trace_begin(char *name, int id, int a, int b)
 {
@@ -160,5 +162,17 @@ void perfmgr_trace_log(char *module, const char *fmt, ...)
 	va_end(args);
 	perfmgr_trace_printk(module, log);
 }
+EXPORT_SYMBOL(perfmgr_trace_log);
 
-#endif
+#else /* !CONFIG_TRACING */
+
+void perfmgr_trace_count(int val, const char *fmt, ...) { }
+void perfmgr_trace_printk(char *module, char *string) { }
+void perfmgr_trace_begin(char *name, int id, int a, int b) { }
+void perfmgr_trace_end(void) { }
+void perfmgr_trace_log(char *module, const char *fmt, ...) { }
+EXPORT_SYMBOL(perfmgr_trace_count);
+EXPORT_SYMBOL(perfmgr_trace_printk);
+EXPORT_SYMBOL(perfmgr_trace_log);
+
+#endif /* CONFIG_TRACING */
