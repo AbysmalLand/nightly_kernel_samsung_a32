@@ -19,8 +19,8 @@ export OBJDUMP=llvm-objdump
 export STRIP=llvm-strip
 export ARCH=arm64
 
-export KCFLAGS=' -w -pipe -O3'
-export KCPPFLAGS=' -O3'
+export KCFLAGS=' -w -pipe -O2'
+export KCPPFLAGS=' -O2'
 export CONFIG_SECTION_MISMATCH_WARN_ONLY=y
 
 #setup configs directory
