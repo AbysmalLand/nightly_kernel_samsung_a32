@@ -769,7 +769,7 @@ extern __printf(2, 0) int
 __ftrace_vprintk(unsigned long ip, const char *fmt, va_list ap);
 
 extern void ftrace_dump(enum ftrace_dump_mode oops_dump_mode);
-#else
+#else /* !CONFIG_TRACING */
 static inline void tracing_start(void) { }
 static inline void tracing_stop(void) { }
 static inline void trace_dump_stack(int skip) { }
@@ -791,6 +791,9 @@ ftrace_vprintk(const char *fmt, va_list ap)
 	return 0;
 }
 static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+#define trace_puts(str) ({ 0; })
+#define do_trace_printk(fmt, args...) do { } while (0)
+#define __trace_printk_check_format(fmt, args...) do { } while (0)
 #endif /* CONFIG_TRACING */
 
 /*

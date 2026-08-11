@@ -33,6 +33,7 @@ struct trace_eval_map {
 
 #define TRACEPOINT_DEFAULT_PRIO	10
 
+#ifdef CONFIG_TRACEPOINTS
 extern int
 tracepoint_probe_register(struct tracepoint *tp, void *probe, void *data);
 extern int
@@ -53,6 +54,26 @@ tracepoint_probe_register_may_exist(struct tracepoint *tp, void *probe,
 extern void
 for_each_kernel_tracepoint(void (*fct)(struct tracepoint *tp, void *priv),
 		void *priv);
+#else /* !CONFIG_TRACEPOINTS */
+static inline int
+tracepoint_probe_register(struct tracepoint *tp, void *probe, void *data)
+{ return -ENOSYS; }
+static inline int
+tracepoint_probe_register_prio(struct tracepoint *tp, void *probe, void *data,
+			       int prio)
+{ return -ENOSYS; }
+static inline int
+tracepoint_probe_unregister(struct tracepoint *tp, void *probe, void *data)
+{ return -ENOSYS; }
+static inline int
+tracepoint_probe_register_may_exist(struct tracepoint *tp, void *probe,
+				    void *data)
+{ return -ENOSYS; }
+static inline void
+for_each_kernel_tracepoint(void (*fct)(struct tracepoint *tp, void *priv),
+		void *priv)
+{ }
+#endif /* CONFIG_TRACEPOINTS */
 
 #ifdef CONFIG_MODULES
 struct tp_module {
