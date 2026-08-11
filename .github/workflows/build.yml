@@ -20,12 +20,20 @@ on:
 
 jobs:
   build:
-    name: Build Kernel for ${{ github.event.inputs.device || 'a32' }} (${{ github.event.inputs.profile || 'balance' }})
+    name: Build Kernel for ${{ github.event.inputs.device || 'a32' }} (${{ matrix.profile }})
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        profile: ${{
+          github.event.inputs.build_type == 'release'
+            && fromJson('["battery", "balance", "perf"]')
+            || fromJson(format('["{0}"]', github.event.inputs.profile || 'balance'))
+          }}
 
     env:
       DEVICE_CHOICE: ${{ github.event.inputs.device || 'a32' }}
-      PROFILE_CHOICE: ${{ github.event.inputs.profile || 'balance' }}
+      PROFILE_CHOICE: ${{ matrix.profile }}
+      BUILD_TYPE: ${{ github.event.inputs.build_type || 'debug' }}
 
     steps:
     - name: Checkout Kernel Source
@@ -70,8 +78,7 @@ jobs:
     - name: Create Flashable Zip
       run: |
         cd sta7dust
-        BUILD_TYPE=${{ github.event.inputs.build_type || 'debug' }}
-        zip -r9 ../nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-${BUILD_TYPE}.zip * -x .git README.md *placeholder
+        zip -r9 ../nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-${{ env.BUILD_TYPE }}.zip * -x .git README.md *placeholder
 
     - name: Upload Artifact
       if: github.event.inputs.build_type == 'debug'
