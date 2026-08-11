@@ -71,21 +71,21 @@ jobs:
       run: |
         cd sta7dust
         BUILD_TYPE=${{ github.event.inputs.build_type || 'debug' }}
-        zip -r9 ../nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${BUILD_TYPE}.zip * -x .git README.md *placeholder
+        zip -r9 ../nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-${BUILD_TYPE}.zip * -x .git README.md *placeholder
 
     - name: Upload Artifact
       if: github.event.inputs.build_type == 'debug'
       uses: actions/upload-artifact@v4
       with:
-        name: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-debug
+        name: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-debug
         path: nightly_yuki-r1-*.zip
 
     - name: Release
       if: github.event.inputs.build_type == 'release'
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-release
-        name: Nightly ${{ env.DEVICE_CHOICE }} release
+        tag_name: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-release
+        name: Nightly ${{ env.DEVICE_CHOICE }} ${{ env.PROFILE_CHOICE }} release
         files: nightly_yuki-r1-*.zip
         prerelease: true
         generate_release_notes: true
