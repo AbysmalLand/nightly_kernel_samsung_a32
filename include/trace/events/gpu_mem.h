@@ -6,7 +6,7 @@
  */
 
 #undef TRACE_SYSTEM
-#define TRACE_SYSTEM gpu_mem
+#define TRACE_SYSTEM gpu_mem_dummy
 
 #if !defined(_TRACE_GPU_MEM_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_GPU_MEM_H
@@ -52,6 +52,9 @@ TRACE_EVENT(gpu_mem_total,
 );
 
 #endif /* _TRACE_GPU_MEM_H */
+
+#undef TRACE_INCLUDE_FILE
+#define TRACE_INCLUDE_FILE gpu_mem
 
 /* This part must be outside protection */
 #include <trace/define_trace.h>
