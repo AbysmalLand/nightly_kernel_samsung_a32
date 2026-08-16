@@ -51,6 +51,7 @@ jobs:
         make clean 2>/dev/null || true
         make mrproper 2>/dev/null || true
         echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
         export TC=$GITHUB_WORKSPACE/clang
         chmod +x build_nightly_ksu.sh
         ./build_nightly_ksu.sh
@@ -71,7 +72,7 @@ jobs:
     - name: Create Flashable Zip
       run: |
         cd sta7dust
-        zip -r9 ../nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-ksu-release.zip * -x .git README.md *placeholder
+        zip -r9 ../nightly_yuki-r1-${{ env.BUILD_DATE }}-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-ksu-release.zip * -x .git README.md *placeholder
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -88,6 +89,7 @@ jobs:
 
     - name: Get Short SHA
       run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
 
     - name: Download all artifacts
       uses: actions/download-artifact@v4
@@ -105,8 +107,8 @@ jobs:
     - name: Release
       uses: ncipollo/release-action@v1
       with:
-        tag: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ github.event.inputs.device || 'a32' }}-ksu-release
-        name: Nightly KernelSU ${{ github.event.inputs.device || 'a32' }} release
+        tag: nightly_yuki-r1-${{ env.BUILD_DATE }}-${{ env.SHORT_SHA }}-${{ github.event.inputs.device || 'a32' }}-ksu-release
+        name: Nightly KernelSU ${{ env.BUILD_DATE }} ${{ github.event.inputs.device || 'a32' }} release
         artifacts: "release-assets/*"
         prerelease: true
         generateReleaseNotes: true
