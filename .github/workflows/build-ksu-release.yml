@@ -53,8 +53,8 @@ jobs:
         echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
         echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
         export TC=$GITHUB_WORKSPACE/clang
-        chmod +x build_nightly_ksu.sh
-        ./build_nightly_ksu.sh
+        chmod +x build_nightly.sh
+        ./build_nightly.sh
 
     - name: Prepare Sta7dust (AnyKernel3)
       run: |
