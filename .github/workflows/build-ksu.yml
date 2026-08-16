@@ -20,6 +20,9 @@ on:
         - debug
         - release
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build Kernel for ${{ github.event.inputs.device || 'a32' }} (${{ matrix.profile }}) with KernelSU
@@ -100,12 +103,12 @@ jobs:
 
     - name: Release
       if: github.event.inputs.build_type == 'release'
-      uses: softprops/action-gh-release@v1
+      uses: ncipollo/release-action@v1
       with:
-        tag_name: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-release
+        tag: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-release
         name: Nightly KernelSU ${{ env.DEVICE_CHOICE }} ${{ env.PROFILE_CHOICE }} release
-        files: nightly_yuki-r1-*.zip
+        artifacts: nightly_yuki-r1-*.zip
         prerelease: true
-        generate_release_notes: true
+        generateReleaseNotes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
