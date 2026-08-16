@@ -1,4 +1,4 @@
-name: Build Nightly Kernel (KernelSU) (Release)
+name: Build Nightly Kernel (All Releases)
 
 on:
   workflow_dispatch:
@@ -12,11 +12,12 @@ permissions:
 
 jobs:
   build:
-    name: Build Kernel for ${{ github.event.inputs.device || 'a32' }} (${{ matrix.profile }}) with KernelSU
+    name: Build Kernel ${{ matrix.ksu && 'with KernelSU ' || '' }}(${{ matrix.profile }})
     runs-on: ubuntu-22.04
     strategy:
       matrix:
         profile: [battery, balance, perf]
+        ksu: [true, false]
 
     env:
       DEVICE_CHOICE: ${{ github.event.inputs.device || 'a32' }}
@@ -40,6 +41,7 @@ jobs:
         rm Clang-14.0.6-20250704.tar.gz
 
     - name: Setup KernelSU
+      if: ${{ matrix.ksu }}
       run: |
         curl -LSs "https://raw.githubusercontent.com/backslashxx/KernelSU/master/kernel/setup.sh" | bash
         echo "CONFIG_KSU=y" > $GITHUB_WORKSPACE/arch/arm64/configs/ksu.config
@@ -72,12 +74,16 @@ jobs:
     - name: Create Flashable Zip
       run: |
         cd sta7dust
-        zip -r9 ../nightly_yuki-r1-${{ env.BUILD_DATE }}-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-ksu-release.zip * -x .git README.md *placeholder
+        if [ "${{ matrix.ksu }}" == "true" ]; then
+          zip -r9 ../nightly_yuki-r1-${{ env.BUILD_DATE }}-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-ksu-release.zip * -x .git README.md *placeholder
+        else
+          zip -r9 ../nightly_yuki-r1-${{ env.BUILD_DATE }}-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-release.zip * -x .git README.md *placeholder
+        fi
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: kernel-ksu-${{ env.PROFILE_CHOICE }}
+        name: kernel-${{ matrix.ksu && 'ksu-' || '' }}${{ env.PROFILE_CHOICE }}
         path: nightly_yuki-r1-*.zip
 
   release:
@@ -108,8 +114,8 @@ jobs:
     - name: Release
       uses: ncipollo/release-action@v1
       with:
-        tag: nightly_yuki-r1-${{ env.BUILD_DATE }}-${{ env.SHORT_SHA }}-${{ github.event.inputs.device || 'a32' }}-ksu-release
-        name: Nightly KernelSU ${{ env.BUILD_DATE }} ${{ github.event.inputs.device || 'a32' }} release
+        tag: nightly_yuki-r1-${{ env.BUILD_DATE }}-${{ env.SHORT_SHA }}-${{ github.event.inputs.device || 'a32' }}-release
+        name: Nightly ${{ env.BUILD_DATE }} ${{ github.event.inputs.device || 'a32' }} release
         artifacts: "release-assets/*"
         prerelease: true
         generateReleaseNotes: true
