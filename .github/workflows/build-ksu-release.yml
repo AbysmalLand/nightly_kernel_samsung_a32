@@ -71,14 +71,43 @@ jobs:
     - name: Create Flashable Zip
       run: |
         cd sta7dust
-        zip -r9 ../nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-release.zip * -x .git README.md *placeholder
+        zip -r9 ../nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-ksu-release.zip * -x .git README.md *placeholder
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: kernel-ksu-${{ env.PROFILE_CHOICE }}
+        path: nightly_yuki-r1-*.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout Kernel Source
+      uses: actions/checkout@v4
+
+    - name: Get Short SHA
+      run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: release-assets
+        merge-multiple: true
+
+    - name: Download backslashxx KSU Manager
+      run: |
+        cd release-assets
+        curl -s https://api.github.com/repos/backslashxx/KernelSU/releases/latest \
+        | grep -Po '"browser_download_url": "\K.*?(?=")' \
+        | wget -qi -
 
     - name: Release
       uses: ncipollo/release-action@v1
       with:
-        tag: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-release
-        name: Nightly KernelSU ${{ env.DEVICE_CHOICE }} ${{ env.PROFILE_CHOICE }} release
-        artifacts: nightly_yuki-r1-*.zip
+        tag: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ github.event.inputs.device || 'a32' }}-ksu-release
+        name: Nightly KernelSU ${{ github.event.inputs.device || 'a32' }} release
+        artifacts: "release-assets/*"
         prerelease: true
         generateReleaseNotes: true
       env:
