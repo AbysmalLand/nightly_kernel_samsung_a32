@@ -1,24 +1,11 @@
-name: Build Nightly Kernel (KernelSU)
+name: Build Nightly Kernel (KernelSU) (Release)
 
 on:
   workflow_dispatch:
     inputs:
       device:
         description: 'Device to build for (a32)'
-        required: true
         default: 'a32'
-      profile:
-        description: 'Tuning Profile (perf, balance, battery)'
-        required: true
-        default: 'balance'
-      build_type:
-        description: 'Build Type'
-        required: true
-        default: 'debug'
-        type: choice
-        options:
-        - debug
-        - release
 
 permissions:
   contents: write
@@ -29,16 +16,12 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        profile: ${{
-          github.event.inputs.build_type == 'release'
-            && fromJson('["battery", "balance", "perf"]')
-            || fromJson(format('["{0}"]', github.event.inputs.profile || 'balance'))
-          }}
+        profile: [battery, balance, perf]
 
     env:
       DEVICE_CHOICE: ${{ github.event.inputs.device || 'a32' }}
       PROFILE_CHOICE: ${{ matrix.profile }}
-      BUILD_TYPE: ${{ github.event.inputs.build_type || 'debug' }}
+      BUILD_TYPE: release
 
     steps:
     - name: Checkout Kernel Source
@@ -62,24 +45,20 @@ jobs:
         echo "CONFIG_KSU=y" > $GITHUB_WORKSPACE/arch/arm64/configs/ksu.config
         echo "CONFIG_KSU_MANUAL_HOOK=y" >> $GITHUB_WORKSPACE/arch/arm64/configs/ksu.config
 
-    - name: Get Latest Commit
-      run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-
-
     - name: Compile Kernel
       run: |
         rm -rf out
         make clean 2>/dev/null || true
         make mrproper 2>/dev/null || true
+        echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
         export TC=$GITHUB_WORKSPACE/clang
-        chmod +x build_nightly.sh
-        ./build_nightly.sh
+        chmod +x build_nightly_ksu.sh
+        ./build_nightly_ksu.sh
 
     - name: Prepare Sta7dust (AnyKernel3)
       run: |
         git clone https://github.com/tuongnguyn/sta7dust.git sta7dust
         
-        # Determine if we should gzip the Image or if Image.gz was already created
         if [ -f out/arch/arm64/boot/Image.gz ]; then
           cp out/arch/arm64/boot/Image.gz sta7dust/
         elif [ -f out/arch/arm64/boot/Image ]; then
@@ -92,17 +71,9 @@ jobs:
     - name: Create Flashable Zip
       run: |
         cd sta7dust
-        zip -r9 ../nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-${{ env.BUILD_TYPE }}.zip * -x .git README.md *placeholder
-
-    - name: Upload Artifact
-      if: github.event.inputs.build_type == 'debug'
-      uses: actions/upload-artifact@v4
-      with:
-        name: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-debug
-        path: nightly_yuki-r1-*.zip
+        zip -r9 ../nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-release.zip * -x .git README.md *placeholder
 
     - name: Release
-      if: github.event.inputs.build_type == 'release'
       uses: ncipollo/release-action@v1
       with:
         tag: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-release

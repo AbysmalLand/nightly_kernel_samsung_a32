@@ -1,22 +1,11 @@
-name: Build Nightly Kernel
+name: Build Nightly Kernel (Release)
 
 on:
   workflow_dispatch:
     inputs:
       device:
         description: 'Device to build for (a32)'
-      profile:
-        description: 'Tuning Profile (perf, balance, battery)'
-        required: true
-        default: 'balance'
-      build_type:
-        description: 'Build Type'
-        required: true
-        default: 'debug'
-        type: choice
-        options:
-        - debug
-        - release
+        default: 'a32'
 
 permissions:
   contents: write
@@ -27,16 +16,12 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        profile: ${{
-          github.event.inputs.build_type == 'release'
-            && fromJson('["battery", "balance", "perf"]')
-            || fromJson(format('["{0}"]', github.event.inputs.profile || 'balance'))
-          }}
+        profile: [battery, balance, perf]
 
     env:
       DEVICE_CHOICE: ${{ github.event.inputs.device || 'a32' }}
       PROFILE_CHOICE: ${{ matrix.profile }}
-      BUILD_TYPE: ${{ github.event.inputs.build_type || 'debug' }}
+      BUILD_TYPE: release
 
     steps:
     - name: Checkout Kernel Source
@@ -81,17 +66,9 @@ jobs:
     - name: Create Flashable Zip
       run: |
         cd sta7dust
-        zip -r9 ../nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-${{ env.BUILD_TYPE }}.zip * -x .git README.md *placeholder
-
-    - name: Upload Artifact
-      if: github.event.inputs.build_type == 'debug'
-      uses: actions/upload-artifact@v4
-      with:
-        name: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-debug
-        path: nightly_yuki-r1-*.zip
+        zip -r9 ../nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-release.zip * -x .git README.md *placeholder
 
     - name: Release
-      if: github.event.inputs.build_type == 'release'
       uses: ncipollo/release-action@v1
       with:
         tag: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-release

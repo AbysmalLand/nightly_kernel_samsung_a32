@@ -1,0 +1,78 @@
+name: Build Nightly Kernel (KernelSU) (Debug)
+
+on:
+  workflow_dispatch:
+    inputs:
+      device:
+        description: 'Device to build for (a32)'
+        default: 'a32'
+      profile:
+        description: 'Tuning Profile (perf, balance, battery)'
+        required: true
+        default: 'balance'
+
+jobs:
+  build:
+    name: Build Kernel for ${{ github.event.inputs.device || 'a32' }} (${{ github.event.inputs.profile || 'balance' }}) with KernelSU
+    runs-on: ubuntu-22.04
+
+    env:
+      DEVICE_CHOICE: ${{ github.event.inputs.device || 'a32' }}
+      PROFILE_CHOICE: ${{ github.event.inputs.profile || 'balance' }}
+      BUILD_TYPE: debug
+
+    steps:
+    - name: Checkout Kernel Source
+      uses: actions/checkout@v4
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential bc gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi libssl-dev libfl-dev curl unzip wget cpio python3 python2 git zip
+
+    - name: Download Toolchain (ZyCromerZ Clang 14)
+      run: |
+        mkdir -p $GITHUB_WORKSPACE/clang
+        wget -q https://github.com/ZyCromerZ/Clang/releases/download/14.0.6-20250704-release/Clang-14.0.6-20250704.tar.gz
+        tar -xf Clang-14.0.6-20250704.tar.gz -C $GITHUB_WORKSPACE/clang
+        rm Clang-14.0.6-20250704.tar.gz
+
+    - name: Setup KernelSU
+      run: |
+        curl -LSs "https://raw.githubusercontent.com/backslashxx/KernelSU/master/kernel/setup.sh" | bash
+        echo "CONFIG_KSU=y" > $GITHUB_WORKSPACE/arch/arm64/configs/ksu.config
+        echo "CONFIG_KSU_MANUAL_HOOK=y" >> $GITHUB_WORKSPACE/arch/arm64/configs/ksu.config
+
+    - name: Compile Kernel
+      run: |
+        rm -rf out
+        make clean 2>/dev/null || true
+        make mrproper 2>/dev/null || true
+        echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        export TC=$GITHUB_WORKSPACE/clang
+        chmod +x build_nightly_ksu.sh
+        ./build_nightly_ksu.sh
+
+    - name: Prepare Sta7dust (AnyKernel3)
+      run: |
+        git clone https://github.com/tuongnguyn/sta7dust.git sta7dust
+        
+        if [ -f out/arch/arm64/boot/Image.gz ]; then
+          cp out/arch/arm64/boot/Image.gz sta7dust/
+        elif [ -f out/arch/arm64/boot/Image ]; then
+          gzip -9 -c out/arch/arm64/boot/Image > sta7dust/Image.gz
+        else
+          echo "Kernel Image not found!"
+          exit 1
+        fi
+
+    - name: Create Flashable Zip
+      run: |
+        cd sta7dust
+        zip -r9 ../nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-debug.zip * -x .git README.md *placeholder
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: nightly_yuki-r1-${{ env.SHORT_SHA }}-${{ env.DEVICE_CHOICE }}-${{ env.PROFILE_CHOICE }}-debug
+        path: nightly_yuki-r1-*.zip
