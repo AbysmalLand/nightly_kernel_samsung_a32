@@ -111,6 +111,14 @@ jobs:
         | grep -Po '"browser_download_url": "\K.*?(?=")' \
         | wget -qi -
 
+    - name: Remove Existing Release and Tag (if any)
+      run: |
+        TAG="nightly_yuki-r1-${{ env.BUILD_DATE }}-${{ env.SHORT_SHA }}-a32-release"
+        gh release delete "$TAG" --yes || true
+        git push --delete origin "$TAG" || true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Release
       uses: ncipollo/release-action@v1
       with:
