@@ -117,7 +117,12 @@ jobs:
         tag: nightly_yuki-r1-${{ env.BUILD_DATE }}-${{ env.SHORT_SHA }}-${{ github.event.inputs.device || 'a32' }}-release
         name: Nightly ${{ env.BUILD_DATE }} ${{ github.event.inputs.device || 'a32' }} release
         artifacts: "release-assets/*"
-        prerelease: true
+        prerelease: false
+        immutableCreate: false                                               
+        allowUpdates: true
         generateReleaseNotes: true
+        replacesArtifacts: true                                              
+        skipIfReleaseExists: false                                           
+        updateOnlyUnreleased: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
