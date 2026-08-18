@@ -112,12 +112,26 @@ jobs:
         | wget -qi -
 
     - name: Remove Existing Release and Tag (if any)
-      run: |
-        TAG="nightly_yuki-r1-${{ env.BUILD_DATE }}-${{ env.SHORT_SHA }}-a32-release"
-        gh release delete "$TAG" --yes || true
-        git push --delete origin "$TAG" || true
       env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TAG: nightly_yuki-r1-${{ env.BUILD_DATE }}-${{ env.SHORT_SHA }}-${{ github.event.inputs.device || 'a32' }}-release
+      run: |
+        # 1) CLI path handles normal (mutable) releases
+        gh release delete "$TAG" --yes --cleanup-tag || true
+        # 2) API fallback: un-immutable then delete (handles immutable releases)
+        REL_ID=$(curl -s -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+          "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG" \
+          | grep -m1 '"id":' | grep -o '[0-9]\+')
+        if [ -n "$REL_ID" ]; then
+          curl -s -X PATCH -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            -d '{"immutable":false}' \
+            "https://api.github.com/repos/${{ github.repository }}/releases/$REL_ID" >/dev/null || true
+          curl -s -X DELETE -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/$REL_ID" >/dev/null || true
+        fi
+        # 3) ensure the git tag is gone too
+        git push --delete origin "$TAG" || true
 
     - name: Release
       uses: ncipollo/release-action@v1
